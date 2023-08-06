@@ -4,7 +4,7 @@
     "license": "MIT",
     "autoload": {
         "psr-4": {
-            "Ishin\\Papergram\\": "src/"
+            "Papergram\\": "src/"
         }
     },
     "authors": [
@@ -14,6 +14,9 @@
         }
     ],
     "require": {
-        "irazasyed/telegram-bot-sdk": "^3.13"
+        "irazasyed/telegram-bot-sdk": "^3.13",
+        "vlucas/phpdotenv": "^5.5",
+        "guzzlehttp/guzzle": "^7.7",
+        "php-on-couch/php-on-couch": "^4.0"
     }
 }
