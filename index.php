@@ -1,12 +1,12 @@
 <?php
 
 require_once __DIR__ . '/vendor/autoload.php';
-// require_once __DIR__ . '/webhook.php';
 
-use Papergram\Base\Listener;
-use Papergram\Commands\HelpCommand;
-use Papergram\Commands\LogoutCommand;
-use Papergram\Commands\StartCommand;
+use SaveToInstapaperBot\Commands\HelpCommand;
+use SaveToInstapaperBot\Commands\LogoutCommand;
+use SaveToInstapaperBot\Commands\StartCommand;
+use SaveToInstapaperBot\Handlers\CallbackHandler;
+use SaveToInstapaperBot\Handlers\MessageHandler;
 use Telegram\Bot\Api;
 
 if (file_exists('.env')) {
@@ -27,6 +27,8 @@ $update = $bot->getWebhookUpdate();
 
 if ($update->has('message')) {
     $message = $update->getMessage();
-
-    Listener::processMessage($message, $bot);
+    MessageHandler::handle($message, $bot);
+} elseif ($update->has('callback_query')) {
+    $callbackQuery = $update->getCallbackQuery();
+    CallbackHandler::handle($callbackQuery);
 }

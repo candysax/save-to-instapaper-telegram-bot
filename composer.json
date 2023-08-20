@@ -1,10 +1,10 @@
 {
-    "name": "ishin/papergram",
+    "name": "ishin/save-to-instapaper-bot",
     "type": "project",
     "license": "MIT",
     "autoload": {
         "psr-4": {
-            "Papergram\\": "src/"
+            "SaveToInstapaperBot\\": "src/"
         }
     },
     "authors": [
@@ -17,6 +17,11 @@
         "irazasyed/telegram-bot-sdk": "^3.13",
         "vlucas/phpdotenv": "^5.5",
         "guzzlehttp/guzzle": "^7.7",
-        "php-on-couch/php-on-couch": "^4.0"
+        "php-on-couch/php-on-couch": "^4.0",
+        "paquettg/php-html-parser": "^2.2",
+        "imangazaliev/didom": "^2.0"
+    },
+    "require-dev": {
+        "monolog/monolog": "^3.4"
     }
 }

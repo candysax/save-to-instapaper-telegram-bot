@@ -1,9 +1,9 @@
 <?php
 
-namespace Papergram\Commands;
+namespace SaveToInstapaperBot\Commands;
 
-use Papergram\Helpers\CommandName;
-use Papergram\Helpers\Text;
+use SaveToInstapaperBot\Helpers\CommandName;
+use SaveToInstapaperBot\Helpers\Text;
 use Telegram\Bot\Commands\Command;
 
 class HelpCommand extends Command

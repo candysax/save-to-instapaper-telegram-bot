@@ -1,6 +1,6 @@
 <?php
 
-namespace Papergram\Adapters;
+namespace SaveToInstapaperBot\Adapters;
 
 use GuzzleHttp\Client;
 
@@ -17,6 +17,7 @@ class InstapaperAdapter
             ],
         ]);
     }
+
 
     public static function save(string $url, array $credentials)
     {

@@ -1,11 +1,13 @@
 <?php
 
-namespace Papergram\Commands;
+namespace SaveToInstapaperBot\Commands;
 
-use Papergram\Base\Auth;
-use Papergram\Helpers\CommandName;
-use Papergram\Helpers\Stage;
-use Papergram\Helpers\Text;
+use SaveToInstapaperBot\Base\Database;
+use SaveToInstapaperBot\Helpers\CommandName;
+use SaveToInstapaperBot\Helpers\AuthStage;
+use SaveToInstapaperBot\Helpers\Text;
+use SaveToInstapaperBot\Processors\AuthProcessor;
+use SaveToInstapaperBot\Services\Auth;
 use Telegram\Bot\Commands\Command;
 
 class LogoutCommand extends Command
@@ -23,8 +25,8 @@ class LogoutCommand extends Command
             $this->replyWithMessage([
                 'text' => 'You have logged out of your Instapaper account.',
             ]);
-            Auth::set('stage', Stage::AUTHORIZING_STARTED, $this->getUpdate()->getMessage()->getChat()->getId());
-            Auth::process($message);
+            Database::set('auth_stage', AuthStage::AUTHORIZING_STARTED, $chatId);
+            AuthProcessor::processMessage($message);
         } else {
             $this->replyWithMessage([
                 'text' => 'Before you log out of your account, you need to log in to it.',

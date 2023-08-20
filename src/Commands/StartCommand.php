@@ -1,17 +1,19 @@
 <?php
 
-namespace Papergram\Commands;
+namespace SaveToInstapaperBot\Commands;
 
-use Papergram\Base\Auth;
-use Papergram\Helpers\CommandName;
-use Papergram\Helpers\Stage;
-use Papergram\Helpers\Text;
+use SaveToInstapaperBot\Base\Database;
+use SaveToInstapaperBot\Helpers\CommandName;
+use SaveToInstapaperBot\Helpers\AuthStage;
+use SaveToInstapaperBot\Helpers\Text;
+use SaveToInstapaperBot\Processors\AuthProcessor;
+use SaveToInstapaperBot\Services\Auth;
 use Telegram\Bot\Commands\Command;
 
 class StartCommand extends Command
 {
     protected string $name = CommandName::START;
-    protected string $description = 'Launching Papergram';
+    protected string $description = 'Launching SaveToInstapaperBot';
 
     public function handle()
     {
@@ -23,8 +25,8 @@ class StartCommand extends Command
                 'text' => Text::startMassage(),
             ]);
 
-            Auth::set('stage', Stage::AUTHORIZING_STARTED, $chatId);
-            Auth::process($message);
+            Database::set('auth_stage', AuthStage::AUTHORIZING_STARTED, $chatId);
+            AuthProcessor::processMessage($message);
         }
     }
 }

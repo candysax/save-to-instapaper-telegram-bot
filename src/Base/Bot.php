@@ -1,6 +1,6 @@
 <?php
 
-namespace Papergram\Base;
+namespace SaveToInstapaperBot\Base;
 
 use Telegram\Bot\Api;
 

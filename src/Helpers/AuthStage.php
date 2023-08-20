@@ -1,8 +1,8 @@
 <?php
 
-namespace Papergram\Helpers;
+namespace SaveToInstapaperBot\Helpers;
 
-class Stage
+class AuthStage
 {
     const AUTHORIZING_STARTED = 0;
     const USERNAME_ENTERED = 1;

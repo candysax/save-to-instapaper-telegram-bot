@@ -11,4 +11,4 @@ if (file_exists('.env')) {
 
 $telegram = new Api($_ENV['BOT_TOKEN']);
 
-$telegram->setWebhook(['url' => 'https://1033-188-32-78-82.ngrok-free.app/']);
+$telegram->setWebhook(['url' => $_ENV['BOT_URL']]);
