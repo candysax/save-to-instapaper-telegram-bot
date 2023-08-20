@@ -2,15 +2,11 @@
 
 namespace SaveToInstapaperBot\Processors;
 
-use SaveToInstapaperBot\Adapters\InstapaperAdapter;
 use SaveToInstapaperBot\Adapters\TelegraphAdapter;
 use SaveToInstapaperBot\Base\Bot;
 use SaveToInstapaperBot\Base\Database;
 use SaveToInstapaperBot\Helpers\AuthStage;
-use SaveToInstapaperBot\Helpers\Text;
 use SaveToInstapaperBot\Services\Auth;
-use stdClass;
-use PHPOnCouch\Exceptions\CouchNotFoundException;
 use Telegram\Bot\Actions;
 use Telegram\Bot\Objects\Message;
 
@@ -29,7 +25,7 @@ class AuthProcessor
             case AuthStage::AUTHORIZING_STARTED:
                 $bot->sendMessage([
                     'chat_id' => $chatId,
-                    'text' => Text::enterUsernameMessage(),
+                    'text' => 'Enter your email:',
                 ]);
 
                 Database::set('auth_stage', AuthStage::USERNAME_ENTERED, $chatId);
@@ -40,7 +36,7 @@ class AuthProcessor
 
                 $bot->sendMessage([
                     'chat_id' => $chatId,
-                    'text' => Text::enterPasswordMessage(),
+                    'text' => 'Enter your password:',
                 ]);
 
                 Database::set('auth_stage', AuthStage::PASSWORD_ENTERED, $chatId);
@@ -57,7 +53,6 @@ class AuthProcessor
                         Database::set('password', $text, $chatId);
 
                         $accountData = static::getTelegraphAccountData($message->from->username, $chatId);
-                        // Database::set('author_name', $accountData['author_name'], $chatId);
                         Database::set('access_token', $accountData['access_token'], $chatId);
 
                         Database::set('auth_stage', AuthStage::AUTHORIZED, $chatId);

@@ -3,10 +3,6 @@
 namespace SaveToInstapaperBot\Services;
 
 use SaveToInstapaperBot\Adapters\TelegraphAdapter;
-use Monolog\Level;
-use Monolog\Logger;
-use Monolog\Handler\StreamHandler;
-use DiDom\Document;
 use SaveToInstapaperBot\Base\Database;
 use SaveToInstapaperBot\Services\TextToNodeConverter;
 

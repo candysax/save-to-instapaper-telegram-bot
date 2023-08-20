@@ -5,7 +5,6 @@ namespace SaveToInstapaperBot\Commands;
 use SaveToInstapaperBot\Base\Database;
 use SaveToInstapaperBot\Helpers\CommandName;
 use SaveToInstapaperBot\Helpers\AuthStage;
-use SaveToInstapaperBot\Helpers\Text;
 use SaveToInstapaperBot\Processors\AuthProcessor;
 use SaveToInstapaperBot\Services\Auth;
 use Telegram\Bot\Commands\Command;

@@ -6,7 +6,6 @@ use SaveToInstapaperBot\Adapters\InstapaperAdapter;
 use SaveToInstapaperBot\Base\Bot;
 use SaveToInstapaperBot\Base\Database;
 use SaveToInstapaperBot\Helpers\AuthStage;
-use SaveToInstapaperBot\Helpers\Text;
 use PHPOnCouch\Exceptions\CouchNotFoundException;
 
 class Auth

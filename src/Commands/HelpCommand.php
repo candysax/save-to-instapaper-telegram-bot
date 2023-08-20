@@ -3,7 +3,6 @@
 namespace SaveToInstapaperBot\Commands;
 
 use SaveToInstapaperBot\Helpers\CommandName;
-use SaveToInstapaperBot\Helpers\Text;
 use Telegram\Bot\Commands\Command;
 
 class HelpCommand extends Command
