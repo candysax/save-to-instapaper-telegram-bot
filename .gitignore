@@ -3,3 +3,4 @@ composer.lock
 .DS_Store
 ngrok.exe
 display.log
+.env.dev

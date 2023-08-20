@@ -12,7 +12,7 @@ use Telegram\Bot\Commands\Command;
 class StartCommand extends Command
 {
     protected string $name = CommandName::START;
-    protected string $description = 'Launching SaveToInstapaperBot';
+    protected string $description = 'launch the bot.';
 
     public function handle()
     {
@@ -21,8 +21,8 @@ class StartCommand extends Command
 
         if (!Auth::isLogged($chatId)) {
             $this->replyWithMessage([
-                'text' => "Hi! This is a bot for saving links and articles to Instapaper from Telegram.\n" .
-                "Please, log in to your Instapaper account",
+                'text' => "Hey! 👋\nThis bot will help you save links, messages and posts to Instapaper from Telegram.\n" .
+                "Please, log in to your Instapaper account.",
             ]);
 
             Database::set('auth_stage', AuthStage::AUTHORIZING_STARTED, $chatId);

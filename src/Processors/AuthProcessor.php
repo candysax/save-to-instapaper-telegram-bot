@@ -59,7 +59,7 @@ class AuthProcessor
 
                         $bot->sendMessage([
                             'chat_id' => $chatId,
-                            'text' => 'You have successfully logged in to your account.',
+                            'text' => '☑️ You have successfully logged in to your account.',
                         ]);
                         $bot->deleteMessage([
                             'chat_id' => $chatId,

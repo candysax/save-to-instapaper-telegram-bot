@@ -17,9 +17,9 @@ if (file_exists('.env')) {
 $bot = new Api($_ENV['BOT_TOKEN']);
 
 $bot->addCommands([
-    HelpCommand::class,
     StartCommand::class,
     LogoutCommand::class,
+    HelpCommand::class,
 ]);
 $bot->commandsHandler(true);
 

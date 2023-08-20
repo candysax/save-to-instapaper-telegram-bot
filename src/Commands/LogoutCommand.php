@@ -12,7 +12,7 @@ use Telegram\Bot\Commands\Command;
 class LogoutCommand extends Command
 {
     protected string $name = CommandName::LOGOUT;
-    protected string $description = 'Log out of your instapaper account.';
+    protected string $description = 'log out of your Instapaper account.';
 
     public function handle()
     {

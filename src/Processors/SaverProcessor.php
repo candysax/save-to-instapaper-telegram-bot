@@ -50,7 +50,7 @@ class SaverProcessor
                 if ($response->getStatusCode() === static::SUCCESSFUL) {
                     $bot->sendMessage([
                         'chat_id' => $chatId,
-                        'text' => 'Link was added to your Instapaper.',
+                        'text' => '✅ Link has been added to your Instapaper.',
                     ]);
                 }
             } elseif (count($urls)) {
@@ -112,7 +112,7 @@ class SaverProcessor
             } else {
                 $bot->sendMessage([
                     'chat_id' => $chatId,
-                    'text' => 'Sorry, something went wrong. Please try again later.' . $e->getMessage(),
+                    'text' => 'Sorry, something went wrong. Please try again later.',
                 ]);
             }
         }
@@ -131,7 +131,7 @@ class SaverProcessor
         if ($response->getStatusCode() === static::SUCCESSFUL) {
             Bot::getInstance()->sendMessage([
                 'chat_id' => $chatId,
-                'text' => 'Link was added to your Instapaper.',
+                'text' => '✅ Link has been added to your Instapaper.',
             ]);
         }
     }
@@ -152,7 +152,7 @@ class SaverProcessor
         if ($response->getStatusCode() === static::SUCCESSFUL) {
             Bot::getInstance()->sendMessage([
                 'chat_id' => $chatId,
-                'text' => 'Article was added to your Instapaper.',
+                'text' => '✅ Message has been added to your Instapaper.',
             ]);
         }
     }
