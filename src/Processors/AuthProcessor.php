@@ -52,7 +52,13 @@ class AuthProcessor
                     if ($response->getStatusCode() === static::SUCCESSFUL) {
                         Database::set('password', $text, $chatId);
 
-                        $accountData = static::getTelegraphAccountData($message->from->username, $chatId);
+                        if (isset($message->from->username)) {
+                            $usernameForTelegraph = $message->from->username;
+                        } else {
+                            $usernameForTelegraph = Database::get('username', $chatId);
+                        }
+
+                        $accountData = static::getTelegraphAccountData($usernameForTelegraph);
                         Database::set('access_token', $accountData['access_token'], $chatId);
 
                         Database::set('auth_stage', AuthStage::AUTHORIZED, $chatId);
@@ -65,6 +71,10 @@ class AuthProcessor
                             'chat_id' => $chatId,
                             'message_id' => $message->getMessageId(),
                         ]);
+                        $bot->sendMessage([
+                            'chat_id' => $chatId,
+                            'text' => '⬇️ To save a message, just send it to the chat bot.',
+                        ]);
                     }
                 } catch (\Exception $e) {
                     $statusCode = $e->getCode();
@@ -76,7 +86,7 @@ class AuthProcessor
                     } else {
                         $bot->sendMessage([
                             'chat_id' => $chatId,
-                            'text' => 'Sorry, something went wrong. Please try again later.',
+                            'text' => 'Sorry, something went wrong. Please try again later.' . $e->getMessage(),
                         ]);
                     }
                     Database::set('auth_stage', AuthStage::AUTHORIZING_STARTED, $chatId);
