@@ -20,8 +20,5 @@
         "php-on-couch/php-on-couch": "^4.0",
         "paquettg/php-html-parser": "^2.2",
         "imangazaliev/didom": "^2.0"
-    },
-    "require-dev": {
-        "monolog/monolog": "^3.4"
     }
 }
