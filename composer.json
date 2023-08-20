@@ -18,7 +18,6 @@
         "vlucas/phpdotenv": "^5.5",
         "guzzlehttp/guzzle": "^7.7",
         "php-on-couch/php-on-couch": "^4.0",
-        "paquettg/php-html-parser": "^2.2",
         "imangazaliev/didom": "^2.0"
     }
 }
