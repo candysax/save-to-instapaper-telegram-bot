@@ -1,5 +1,4 @@
 # About
----
 Telegram bot for saving any link, message or text in your Instapaper account (https://instapaper.com ).
 The bot can save:
 - direct links
@@ -7,7 +6,6 @@ The bot can save:
 - the entire message text
 
 ## How to use
----
 - Enter your account credentials
 - Send messages to the chat bot
 
