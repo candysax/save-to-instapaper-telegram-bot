@@ -27,6 +27,10 @@ class StartCommand extends Command
 
             Database::set('auth_stage', AuthStage::AUTHORIZING_STARTED, $chatId);
             AuthProcessor::processMessage($message);
+        } else {
+            $this->replyWithMessage([
+                'text' => 'You are already logged into your Instapaper account.',
+            ]);
         }
     }
 }
