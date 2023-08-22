@@ -36,12 +36,7 @@ class SaverProcessor
 
         $entitiesConverter = new EntitiesToTagsConverter();
 
-        $urls = static::getUrls($entities, $text, $chatId);
-
-        // $bot->sendMessage([
-        //     'chat_id' => $chatId,
-        //     'text' => $text,
-        // ]);
+        $urls = static::getUrls($entities, $text);
 
         $isTextLink = count($urls) === 1 && strtolower($urls[0]) === strtolower(preg_replace('/\s+/', '', $text));
 
@@ -61,7 +56,7 @@ class SaverProcessor
                     ]);
                 }
             } elseif (count($urls)) {
-                $text = $entitiesConverter->convert($entities, $text, $chatId);
+                $text = $entitiesConverter->convert($entities, $text);
 
                 $bot->sendChatAction([
                     'chat_id' => $chatId,
@@ -202,7 +197,7 @@ class SaverProcessor
     }
 
 
-    private static function getUrls($entities, string $text, $chatId = 0)
+    private static function getUrls($entities, string $text)
     {
         $urls = [];
         $startPosition = 0;
@@ -211,11 +206,6 @@ class SaverProcessor
             $entityOffset = $entity->getOffset();
 
             $emojis = Emojis::count($text, $startPosition, $entityOffset);
-            // Bot::getInstance()->sendMessage([
-            //     'chat_id' => $chatId,
-            //     'text' => json_encode($entity->getType()),
-            // ]);
-
             $totalEmojisCount += $emojis;
 
             if ($entity->getType() === 'text_link') {

@@ -6,7 +6,7 @@ use SaveToInstapaperBot\Helpers\Emojis;
 
 class EntitiesToTagsConverter
 {
-    public function convert($entities, string $text, $chatId = 0)
+    public function convert($entities, string $text)
     {
         $shift = 0;
         $searchText = $text;
