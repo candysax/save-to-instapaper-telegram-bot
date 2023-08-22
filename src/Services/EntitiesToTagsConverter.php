@@ -2,7 +2,7 @@
 
 namespace SaveToInstapaperBot\Services;
 
-use SaveToInstapaperBot\Base\Bot;
+use SaveToInstapaperBot\Helpers\Emojis;
 
 class EntitiesToTagsConverter
 {
@@ -11,19 +11,17 @@ class EntitiesToTagsConverter
         $shift = 0;
         $searchText = $text;
 
-        // $emojis = $this->getEmojis($text);
-        // $emojiIndex = 0;
-        // Bot::getInstance()->sendMessage([
-        //     'chat_id' => $chatId,
-        //     'text' => json_encode($emojis),
-        // ]);
+        $startPosition = 0;
+        $totalEmojisCount = 0;
+
         foreach ($entities as $entity) {
             $entityType = $entity->getType();
-            // if ($entityOffset <= $emojis[$emojiIndex]['position']) {
-            //     $emojiIndex++;
-            //     $entityOffset -= $emojiIndex;
-            // }
-            $entityText = mb_substr($searchText, $entity->getOffset(), $entity->getLength());
+            $entityOffset = $entity->getOffset();
+
+            $emojis = Emojis::count($searchText, $startPosition, $entityOffset);
+            $totalEmojisCount += $emojis;
+
+            $entityText = mb_substr($searchText, $entityOffset - $totalEmojisCount, $entity->getLength());
             $shift = strpos($text, $entityText, $shift);
 
             switch ($entityType) {
@@ -70,26 +68,10 @@ class EntitiesToTagsConverter
                     $shift += strlen($replacement);
                     break;
             }
+
+            $startPosition = $entityOffset;
         }
 
         return "<p>{$text}</p>";
-    }
-
-
-    private function getEmojis(string $text)
-    {
-        $emojiRegex = '/(\p{Emoji})/u';
-        mb_ereg_search_init($text, $emojiRegex);
-
-        $positions = [];
-        while ($result = mb_ereg_search_pos()) {
-            $positions[] = [
-                'emoji' => mb_substr($text, $result[0], $result[1] - $result[0]),
-                'start' => $result[0],
-                'end' => $result[1]
-            ];
-        }
-
-        return $positions;
     }
 }

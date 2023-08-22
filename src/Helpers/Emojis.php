@@ -3,7 +3,6 @@
 namespace SaveToInstapaperBot\Helpers;
 
 use SteppingHat\EmojiDetector\EmojiDetector;
-use Arispati\EmojiRemover\EmojiRemover;
 
 class Emojis
 {
