@@ -29,9 +29,11 @@ class SaverProcessor
         if ($messageInfo->has('caption')) {
             $text = $messageInfo->getCaption();
             $entities = $messageInfo->getCaptionEntities();
-        } else {
+        } elseif ($messageInfo->has('text')) {
             $text = $messageInfo->getText();
             $entities = $messageInfo->getEntities();
+        } else {
+            return;
         }
 
         $entitiesConverter = new EntitiesToTagsConverter();
