@@ -10,6 +10,7 @@ use Telegram\Bot\Objects\Message;
 use Telegram\Bot\Objects\CallbackQuery;
 use SaveToInstapaperBot\Base\Bot;
 use SaveToInstapaperBot\Base\Database;
+use SaveToInstapaperBot\Helpers\Emojis;
 use SaveToInstapaperBot\Services\EntitiesToTagsConverter;
 use SaveToInstapaperBot\Services\ArticlePageGenerator;
 use SaveToInstapaperBot\Services\Auth;
@@ -27,14 +28,20 @@ class SaverProcessor
 
         if ($messageInfo->has('caption')) {
             $text = $messageInfo->getCaption();
+            $entities = $messageInfo->getCaptionEntities();
         } else {
             $text = $messageInfo->getText();
+            $entities = $messageInfo->getEntities();
         }
 
-        $entities = $messageInfo->getEntities();
         $entitiesConverter = new EntitiesToTagsConverter();
 
-        $urls = static::getUrls($entities, $text);
+        $urls = static::getUrls($entities, $text, $chatId);
+
+        // $bot->sendMessage([
+        //     'chat_id' => $chatId,
+        //     'text' => $text,
+        // ]);
 
         $isTextLink = count($urls) === 1 && strtolower($urls[0]) === strtolower(preg_replace('/\s+/', '', $text));
 
@@ -54,7 +61,7 @@ class SaverProcessor
                     ]);
                 }
             } elseif (count($urls)) {
-                $text = $entitiesConverter->convert($entities, $text);
+                $text = $entitiesConverter->convert($entities, $text, $chatId);
 
                 $bot->sendChatAction([
                     'chat_id' => $chatId,
@@ -102,7 +109,7 @@ class SaverProcessor
             if ($statusCode === static::INVALID_CREDENTIALS) {
                 $bot->sendMessage([
                     'chat_id' => $chatId,
-                    'text' => 'Invalid username or password. Please log in to your instapaper account again.',
+                    'text' => '❗ Invalid username or password. Please log in to your instapaper account again.',
                 ]);
 
                 Auth::logout($chatId);
@@ -112,7 +119,7 @@ class SaverProcessor
             } else {
                 $bot->sendMessage([
                     'chat_id' => $chatId,
-                    'text' => 'Sorry, something went wrong. Please try again later.',
+                    'text' => '❗ Sorry, something went wrong. Please try again later.',
                 ]);
             }
         }
@@ -195,15 +202,29 @@ class SaverProcessor
     }
 
 
-    private static function getUrls($entities, string $text)
+    private static function getUrls($entities, string $text, $chatId = 0)
     {
         $urls = [];
+        $startPosition = 0;
+        $totalEmojisCount = 0;
         foreach ($entities as $entity) {
+            $entityOffset = $entity->getOffset();
+
+            $emojis = Emojis::count($text, $startPosition, $entityOffset);
+            // Bot::getInstance()->sendMessage([
+            //     'chat_id' => $chatId,
+            //     'text' => json_encode($entity->getType()),
+            // ]);
+
+            $totalEmojisCount += $emojis;
+
             if ($entity->getType() === 'text_link') {
                 $urls[] = $entity->getUrl();
             } elseif ($entity->getType() === 'url') {
-                $urls[] = mb_substr($text, $entity->getOffset(), $entity->getLength());
+                $urls[] = mb_substr($text, $entityOffset - $totalEmojisCount, $entity->getLength());
             }
+
+            $startPosition = $entityOffset;
         }
 
         return $urls;
