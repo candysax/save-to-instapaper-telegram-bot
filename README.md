@@ -1,5 +1,5 @@
 # About
-Telegram bot for saving any link, message or text in your Instapaper account (https://instapaper.com ).
+Telegram bot for saving any link, message or text in your Instapaper account (https://instapaper.com).
 The bot can save:
 - direct links
 - links inside the message text
