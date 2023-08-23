@@ -31,7 +31,6 @@ class TextToNodeConverter
         foreach ($elements as $element) {
             if ($element->isTextNode()) {
                 $nodes[] = [
-                    'tag' => 'span',
                     'children' => $this->collectElemenets($element) ? $this->collectElemenets($element) : [$element->text()],
                 ];
             } elseif ($element->isElementNode()) {
