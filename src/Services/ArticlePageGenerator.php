@@ -4,7 +4,7 @@ namespace SaveToInstapaperBot\Services;
 
 use SaveToInstapaperBot\Adapters\TelegraphAdapter;
 use SaveToInstapaperBot\Base\Database;
-use SaveToInstapaperBot\Services\TextToNodeConverter;
+use Candysax\TelegraphNodeConverter\HTML;
 
 class ArticlePageGenerator
 {
@@ -29,7 +29,7 @@ class ArticlePageGenerator
             $this->date
         );
 
-        $content = $this->generateArticleContent($this->text);
+        $content = HTML::convertToNode($this->text)->json();
 
         $response = TelegraphAdapter::createPage(
             $title,
@@ -58,14 +58,5 @@ class ArticlePageGenerator
         }
 
         return "Personal Telegram post ({$datetime})";
-    }
-
-
-    private function generateArticleContent(string $text)
-    {
-        $textToNodeConverter = new TextToNodeConverter();
-        $template = $textToNodeConverter->convert($text);
-
-        return json_encode($template);
     }
 }
