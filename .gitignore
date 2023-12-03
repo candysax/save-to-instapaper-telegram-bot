@@ -1,5 +1,7 @@
+.idea/
 vendor/
-composer.lock
+temp/
+nginx/
 .DS_Store
 display.log
 .env.dev

@@ -31,11 +31,7 @@ class Database
             $user = $db->getDoc($chatId);
             $user->{$key} = $value;
 
-            // try {
             $db->storeDoc($user);
-            // } catch (\Exception $e) {
-                // echo 'Ошибка при сохранении записи: ' . $e->getMessage();
-            // }
         } catch (CouchNotFoundException $e) {
             $user = new stdClass();
             $user->_id = $chatId;
