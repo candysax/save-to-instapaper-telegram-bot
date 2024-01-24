@@ -15,10 +15,17 @@ class Database
         if (static::$db) {
             return static::$db;
         }
-        static::$db = new CouchClient("http://{$_ENV['DB_HOST']}:{$_ENV['DB_PORT']}", $_ENV['DB_NAME'], [
+        $client = new CouchClient("http://{$_ENV['DB_HOST']}:{$_ENV['DB_PORT']}", $_ENV['DB_NAME'], [
             'username' => $_ENV['DB_USERNAME'],
             'password' => $_ENV['DB_PASSWORD'],
         ]);
+
+        try {
+            $client->createDatabase();
+            static::$db = $client;
+        } catch (\Exception $e) {
+            static::$db = $client;
+        }
 
         return static::$db;
     }
@@ -41,7 +48,7 @@ class Database
         } catch (\Exception $e) {
             Bot::getInstance()->sendMessage([
                 'chat_id' => $chatId,
-                'text' => 'Sorry, something went wrong. Please try again later.'
+                'text' => 'Sorry, something went wrong. Please try again later.',
             ]);
         }
     }
@@ -56,7 +63,7 @@ class Database
         } catch (\Exception $e) {
             Bot::getInstance()->sendMessage([
                 'chat_id' => $chatId,
-                'text' => 'Sorry, something went wrong. Please try again later.'
+                'text' => 'Sorry, something went wrong. Please try again later.',
             ]);
         }
     }

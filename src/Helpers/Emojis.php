@@ -6,9 +6,9 @@ use SteppingHat\EmojiDetector\EmojiDetector;
 
 class Emojis
 {
-    public static function count($text, $start, $end)
+    public static function count($text, $startPosition, $endPosition)
     {
-        $text = mb_substr($text, $start, $end - $start);
+        $text = mb_substr($text, $startPosition, $endPosition - $startPosition);
 
         $detector = new EmojiDetector();
         $emojis = $detector->detect($text, false);
