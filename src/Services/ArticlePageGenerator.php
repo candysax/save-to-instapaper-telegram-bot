@@ -3,21 +3,22 @@
 namespace SaveToInstapaperBot\Services;
 
 use SaveToInstapaperBot\Adapters\TelegraphAdapter;
+use SaveToInstapaperBot\Base\Bot;
 use SaveToInstapaperBot\Base\Database;
 use Candysax\TelegraphNodeConverter\HTML;
 
 class ArticlePageGenerator
 {
+    private string $topic;
     private string $text;
     private $forwardFromChat;
-    private int $date;
     private string $chatId;
 
-    public function __construct(string $text, $forwardFromChat, int $date, string $chatId)
+    public function __construct(string $topic, string $text, $forwardFromChat, string $chatId)
     {
+        $this->topic = $topic;
         $this->text = $text;
         $this->forwardFromChat = $forwardFromChat;
-        $this->date = $date;
         $this->chatId = $chatId;
     }
 
@@ -26,7 +27,7 @@ class ArticlePageGenerator
     {
         $title = $this->generateArticleTitle(
             $this->forwardFromChat,
-            $this->date
+            $this->topic
         );
 
         $content = HTML::convertToNode($this->text)->json();
@@ -47,16 +48,12 @@ class ArticlePageGenerator
     }
 
 
-    private function generateArticleTitle($forwardFromChat, int $date)
+    private function generateArticleTitle($forwardFromChat, string $topic)
     {
-        $datetime = date('d.m.Y H:i', $date);
-
         if ($forwardFromChat) {
-            $channelName = $forwardFromChat['title'] . ' ';
-
-            return "Telegram post from {$channelName}({$datetime})";
+            return "{$forwardFromChat['title']} | {$topic}";
         }
 
-        return "Personal Telegram post ({$datetime})";
+        return "Personal post | {$topic}";
     }
 }

@@ -1,6 +1,8 @@
 .idea/
+.git/
 vendor/
 temp/
+nginx/
 .DS_Store
 display.log
 .env.dev

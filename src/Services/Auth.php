@@ -7,6 +7,7 @@ use SaveToInstapaperBot\Base\Bot;
 use SaveToInstapaperBot\Base\Database;
 use SaveToInstapaperBot\Helpers\AuthStage;
 use PHPOnCouch\Exceptions\CouchNotFoundException;
+use SaveToInstapaperBot\Helpers\ErrorLogger;
 
 class Auth
 {
@@ -25,7 +26,11 @@ class Auth
         } catch (\Exception $e) {
             Bot::getInstance()->sendMessage([
                 'chat_id' => $chatId,
-                'text' => 'Sorry, something went wrong. Please try again later.'
+                'text' => ErrorLogger::print(
+                    'auth',
+                    '❗ Sorry, something went wrong. Please try again later.',
+                    $e
+                ),
             ]);
         }
     }
@@ -45,7 +50,11 @@ class Auth
         } catch (\Exception $e) {
             Bot::getInstance()->sendMessage([
                 'chat_id' => $chatId,
-                'text' => 'Sorry, something went wrong. Please try again later.'
+                'text' => ErrorLogger::print(
+                    'logout',
+                    '❗ Sorry, something went wrong. Please try again later.',
+                    $e
+                ),
             ]);
         }
     }

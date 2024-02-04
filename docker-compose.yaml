@@ -1,0 +1,37 @@
+services:
+  php:
+    build: ./
+    restart: always
+    volumes:
+      - papergram:/var/www/
+    depends_on:
+      - couchdb
+
+  nginx:
+    image: nginx:stable-alpine
+    restart: always
+    ports:
+      - 8080:80
+    volumes:
+      - papergram:/var/www/
+      - ./nginx:/etc/nginx/conf.d
+    depends_on:
+      - couchdb
+    links:
+      - couchdb
+
+  couchdb:
+    image: couchdb:3
+    volumes:
+      - couchdb_data:/opt/couchdb/data
+      - ./couchdb/config.ini:/opt/couchdb/etc/local.ini
+    ports:
+      - "5984:5984"
+    restart: on-failure
+    environment:
+      - COUCHDB_USER=${DB_USERNAME}
+      - COUCHDB_PASSWORD=${DB_PASSWORD}
+
+volumes:
+  papergram:
+  couchdb_data:

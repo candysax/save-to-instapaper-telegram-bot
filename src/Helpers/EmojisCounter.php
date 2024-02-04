@@ -4,7 +4,7 @@ namespace SaveToInstapaperBot\Helpers;
 
 use SteppingHat\EmojiDetector\EmojiDetector;
 
-class Emojis
+class EmojisCounter
 {
     public static function count($text, $startPosition, $endPosition)
     {

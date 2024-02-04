@@ -3,14 +3,16 @@
 namespace SaveToInstapaperBot\Processors;
 
 use SaveToInstapaperBot\Adapters\InstapaperAdapter;
+use SaveToInstapaperBot\Helpers\ArticleTopicGenerator;
 use SaveToInstapaperBot\Helpers\AuthStage;
+use SaveToInstapaperBot\Helpers\ErrorLogger;
 use Telegram\Bot\Actions;
 use Telegram\Bot\Keyboard\Keyboard;
 use Telegram\Bot\Objects\Message;
 use Telegram\Bot\Objects\CallbackQuery;
 use SaveToInstapaperBot\Base\Bot;
 use SaveToInstapaperBot\Base\Database;
-use SaveToInstapaperBot\Helpers\Emojis;
+use SaveToInstapaperBot\Helpers\EmojisCounter;
 use SaveToInstapaperBot\Services\EntitiesToTagsConverter;
 use SaveToInstapaperBot\Services\ArticlePageGenerator;
 use SaveToInstapaperBot\Services\Auth;
@@ -38,6 +40,7 @@ class SaverProcessor
 
         $entitiesConverter = new EntitiesToTagsConverter();
 
+        $topic = ArticleTopicGenerator::generate($text);
         $urls = static::getUrls($entities, $text);
 
         $isTextLink = count($urls) === 1 && strtolower($urls[0]) === strtolower(preg_replace('/\s+/', '', $text));
@@ -80,8 +83,8 @@ class SaverProcessor
 
                 Database::set('temp', json_encode([
                     'forwardFromChat' => $messageInfo->getForwardFromChat(),
-                    'date' => $messageInfo->getDate(),
                     'text' => $text,
+                    'topic' => $topic,
                     'links' => $urls,
                 ]), $chatId);
 
@@ -95,9 +98,9 @@ class SaverProcessor
             } else {
                 $text = $entitiesConverter->convert($entities, $text);
                 static::processText(
+                    $topic,
                     $text,
                     $messageInfo->getForwardFromChat(),
-                    $messageInfo->getDate(),
                     $chatId
                 );
             }
@@ -106,7 +109,7 @@ class SaverProcessor
             if ($statusCode === static::INVALID_CREDENTIALS) {
                 $bot->sendMessage([
                     'chat_id' => $chatId,
-                    'text' => '❗ Invalid username or password. Please log in to your instapaper account again.',
+                    'text' => '❗ Invalid username or password. Please log in to your Instapaper account again.',
                 ]);
 
                 Auth::logout($chatId);
@@ -116,7 +119,11 @@ class SaverProcessor
             } else {
                 $bot->sendMessage([
                     'chat_id' => $chatId,
-                    'text' => '❗ Sorry, something went wrong. Please try again later.',
+                    'text' => ErrorLogger::print(
+                        'save process',
+                        '❗ Sorry, something went wrong. Please try again later.',
+                        $e
+                    ),
                 ]);
             }
         }
@@ -141,14 +148,14 @@ class SaverProcessor
     }
 
 
-    public static function processText(string $text, $forwardFromChat, int $date, string $chatId)
+    public static function processText(string $topic, string $text, $forwardFromChat, string $chatId)
     {
         Bot::getInstance()->sendChatAction([
             'chat_id' => $chatId,
             'action' => Actions::TYPING,
         ]);
 
-        $articlePageGenerator = new ArticlePageGenerator($text, $forwardFromChat, $date,  $chatId);
+        $articlePageGenerator = new ArticlePageGenerator($topic, $text, $forwardFromChat, $chatId);
         $url = $articlePageGenerator->createArticle();
 
         $response = static::saveLink($url, $chatId);
@@ -175,11 +182,11 @@ class SaverProcessor
         if ($savingType === 'add_link') {
             static::processLink($temp['links'][$urlIndex], $chatId);
         } elseif ($savingType === 'add_text') {
-            static::processText($temp['text'], $temp['forwardFromChat'], $temp['date'], $chatId);
+            static::processText($temp['topic'], $temp['text'], $temp['forwardFromChat'], $chatId);
         } else {
             Bot::getInstance()->sendMessage([
                 'chat_id' => $chatId,
-                'text' => "Sorry. The specified type of saving is incorrect.",
+                'text' => '❗ Sorry, the specified type of saving is incorrect.',
             ]);
         }
 
@@ -207,7 +214,7 @@ class SaverProcessor
         foreach ($entities as $entity) {
             $entityOffset = $entity->getOffset();
 
-            $emojis = Emojis::count($text, $startPosition, $entityOffset);
+            $emojis = EmojisCounter::count($text, $startPosition, $entityOffset);
             $totalEmojisCount += $emojis;
 
             if ($entity->getType() === 'text_link') {

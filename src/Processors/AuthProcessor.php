@@ -6,6 +6,7 @@ use SaveToInstapaperBot\Adapters\TelegraphAdapter;
 use SaveToInstapaperBot\Base\Bot;
 use SaveToInstapaperBot\Base\Database;
 use SaveToInstapaperBot\Helpers\AuthStage;
+use SaveToInstapaperBot\Helpers\ErrorLogger;
 use SaveToInstapaperBot\Services\Auth;
 use Telegram\Bot\Actions;
 use Telegram\Bot\Objects\Message;
@@ -81,12 +82,16 @@ class AuthProcessor
                     if ($statusCode === static::INVALID_CREDENTIALS) {
                         $bot->sendMessage([
                             'chat_id' => $chatId,
-                            'text' => 'Invalid username or password. Please log in to your instapaper account again.',
+                            'text' => '❗ Invalid username or password. Please log in to your Instapaper account again.',
                         ]);
                     } else {
                         $bot->sendMessage([
                             'chat_id' => $chatId,
-                            'text' => 'Sorry, something went wrong. Please try again later.' . $e->getMessage(),
+                            'text' => ErrorLogger::print(
+                                'auth process',
+                                '❗ Sorry, something went wrong. Please try again later.',
+                                $e
+                            ),
                         ]);
                     }
                     Database::set('auth_stage', AuthStage::AUTHORIZING_STARTED, $chatId);

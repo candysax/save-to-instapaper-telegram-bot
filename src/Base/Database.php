@@ -4,6 +4,7 @@ namespace SaveToInstapaperBot\Base;
 
 use PHPOnCouch\CouchClient;
 use PHPOnCouch\Exceptions\CouchNotFoundException;
+use SaveToInstapaperBot\Helpers\ErrorLogger;
 use stdClass;
 
 class Database
@@ -15,10 +16,14 @@ class Database
         if (static::$db) {
             return static::$db;
         }
-        $client = new CouchClient("http://{$_ENV['DB_HOST']}:{$_ENV['DB_PORT']}", $_ENV['DB_NAME'], [
-            'username' => $_ENV['DB_USERNAME'],
-            'password' => $_ENV['DB_PASSWORD'],
-        ]);
+        $client = new CouchClient(
+            $_ENV['DB_HOST_PROTOCOL'] . '://' . $_ENV['DB_HOST'] . ':' . $_ENV['DB_PORT'],
+            $_ENV['DB_NAME'],
+            [
+                'username' => $_ENV['DB_USERNAME'],
+                'password' => $_ENV['DB_PASSWORD'],
+            ]
+        );
 
         try {
             $client->createDatabase();
@@ -48,7 +53,11 @@ class Database
         } catch (\Exception $e) {
             Bot::getInstance()->sendMessage([
                 'chat_id' => $chatId,
-                'text' => 'Sorry, something went wrong. Please try again later.',
+                'text' => ErrorLogger::print(
+                    'set',
+                    '❗ Sorry, something went wrong. Please try again later.',
+                    $e
+                ),
             ]);
         }
     }
@@ -63,7 +72,11 @@ class Database
         } catch (\Exception $e) {
             Bot::getInstance()->sendMessage([
                 'chat_id' => $chatId,
-                'text' => 'Sorry, something went wrong. Please try again later.',
+                'text' => ErrorLogger::print(
+                    'get',
+                    '❗ Sorry, something went wrong. Please try again later.',
+                    $e
+                ),
             ]);
         }
     }
