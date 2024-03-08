@@ -3,20 +3,20 @@
 namespace SaveToInstapaperBot\Handlers;
 
 use SaveToInstapaperBot\Processors\AuthProcessor;
-use SaveToInstapaperBot\Processors\SaverProcessor;
+use SaveToInstapaperBot\Processors\SaverCallbackQueryProcessor;
 use SaveToInstapaperBot\Services\Auth;
 use Telegram\Bot\Objects\CallbackQuery;
 
-class CallbackHandler
+class CallbackHandler extends BaseHandler
 {
-    public static function handle(CallbackQuery $callbackQuery)
+    public function handle(CallbackQuery $callbackQuery): void
     {
         $chatId = $callbackQuery->getMessage()->getChat()->getId();
 
         if (Auth::isLogged($chatId)) {
-            SaverProcessor::processCallbackQuery($callbackQuery);
+            SaverCallbackQueryProcessor::catch($callbackQuery);
         } else {
-            AuthProcessor::processMessage($callbackQuery->getMessage());
+            AuthProcessor::run($callbackQuery->getMessage());
         }
     }
 }

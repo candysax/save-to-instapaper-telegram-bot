@@ -8,9 +8,9 @@ use Telegram\Bot\Commands\Command;
 class HelpCommand extends Command
 {
     protected string $name = CommandName::HELP;
-    protected string $description = 'show a list of available commands.';
+    protected string $description = 'show a list of available commands';
 
-    public function handle()
+    public function handle(): void
     {
         $commands = $this->telegram->getCommands();
 

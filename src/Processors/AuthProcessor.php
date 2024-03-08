@@ -9,100 +9,106 @@ use SaveToInstapaperBot\Helpers\AuthStage;
 use SaveToInstapaperBot\Helpers\ErrorLogger;
 use SaveToInstapaperBot\Services\Auth;
 use Telegram\Bot\Actions;
-use Telegram\Bot\Objects\Message;
 
-class AuthProcessor
+class AuthProcessor extends BaseMessageProcessor
 {
-    const SUCCESSFUL = 200;
-    const INVALID_CREDENTIALS = 403;
+    protected const SUCCESSFUL = 200;
 
-    public static function processMessage(Message $message)
+    public function processMessage(): void
     {
-        $bot = Bot::getInstance();
-        $chatId = $message->getChat()->getId();
-        $text = $message->getText();
-
-        switch (Database::get('auth_stage', $chatId)) {
+        switch (Database::get('auth_stage', $this->chatId)) {
             case AuthStage::AUTHORIZING_STARTED:
-                $bot->sendMessage([
-                    'chat_id' => $chatId,
-                    'text' => 'Enter your email:',
-                ]);
-
-                Database::set('auth_stage', AuthStage::USERNAME_ENTERED, $chatId);
+                $this->startAuthorization();
                 break;
 
             case AuthStage::USERNAME_ENTERED:
-                Database::set('username', $text, $chatId);
-
-                $bot->sendMessage([
-                    'chat_id' => $chatId,
-                    'text' => 'Enter your password:',
-                ]);
-
-                Database::set('auth_stage', AuthStage::PASSWORD_ENTERED, $chatId);
+                $this->processUsername($this->message->getText());
                 break;
 
             case AuthStage::PASSWORD_ENTERED:
-                try {
-                    $bot->sendChatAction([
-                        'chat_id' => $chatId,
-                        'action' => Actions::TYPING,
-                    ]);
-                    $response = Auth::login(Database::get('username', $chatId), $text);
-                    if ($response->getStatusCode() === static::SUCCESSFUL) {
-                        Database::set('password', $text, $chatId);
-
-                        if (isset($message->from->username)) {
-                            $usernameForTelegraph = $message->from->username;
-                        } else {
-                            $usernameForTelegraph = Database::get('username', $chatId);
-                        }
-
-                        $accountData = static::getTelegraphAccountData($usernameForTelegraph);
-                        Database::set('access_token', $accountData['access_token'], $chatId);
-
-                        Database::set('auth_stage', AuthStage::AUTHORIZED, $chatId);
-
-                        $bot->sendMessage([
-                            'chat_id' => $chatId,
-                            'text' => '☑️ You have successfully logged in to your account.',
-                        ]);
-                        $bot->deleteMessage([
-                            'chat_id' => $chatId,
-                            'message_id' => $message->getMessageId(),
-                        ]);
-                        $bot->sendMessage([
-                            'chat_id' => $chatId,
-                            'text' => '⬇️ To save a message, just send it to the chat bot.',
-                        ]);
-                    }
-                } catch (\Exception $e) {
-                    $statusCode = $e->getCode();
-                    if ($statusCode === static::INVALID_CREDENTIALS) {
-                        $bot->sendMessage([
-                            'chat_id' => $chatId,
-                            'text' => '❗ Invalid username or password. Please log in to your Instapaper account again.',
-                        ]);
-                    } else {
-                        $bot->sendMessage([
-                            'chat_id' => $chatId,
-                            'text' => ErrorLogger::print(
-                                'auth process',
-                                '❗ Sorry, something went wrong. Please try again later.',
-                                $e
-                            ),
-                        ]);
-                    }
-                    Database::set('auth_stage', AuthStage::AUTHORIZING_STARTED, $chatId);
-                    static::processMessage($message);
-                }
+                $this->processPassword($this->message->getText());
                 break;
         }
     }
 
-    private static function getTelegraphAccountData(string $tgUserName)
+
+    protected function startAuthorization(): void
     {
+        Bot::api()->sendMessage([
+            'chat_id' => $this->chatId,
+            'text' => 'Enter your email:',
+        ]);
+
+        Database::set('auth_stage', AuthStage::USERNAME_ENTERED, $this->chatId);
+    }
+
+    protected function processUsername(string $username): void
+    {
+        Database::set('username', $username, $this->chatId);
+
+        Bot::api()->sendMessage([
+            'chat_id' => $this->chatId,
+            'text' => 'Enter your password:',
+        ]);
+
+        Database::set('auth_stage', AuthStage::PASSWORD_ENTERED, $this->chatId);
+    }
+
+    protected function processPassword(string $password): void
+    {
+        $bot = Bot::api();
+
+        try {
+            $bot->sendChatAction([
+                'chat_id' => $this->chatId,
+                'action' => Actions::TYPING,
+            ]);
+
+            $response = Auth::login(Database::get('username', $this->chatId), $password);
+
+            if ($response->getStatusCode() === static::SUCCESSFUL) {
+                Database::set('password', $password, $this->chatId);
+
+                $accountData = $this->getTelegraphAccountData();
+
+                Database::set('access_token', $accountData['access_token'], $this->chatId);
+                Database::set('auth_stage', AuthStage::AUTHORIZED, $this->chatId);
+
+                $bot->sendMessage([
+                    'chat_id' => $this->chatId,
+                    'text' => '☑️ You have successfully logged in to your account.',
+                ]);
+                $bot->deleteMessage([
+                    'chat_id' => $this->chatId,
+                    'message_id' => $this->message->getMessageId(),
+                ]);
+                $bot->sendMessage([
+                    'chat_id' => $this->chatId,
+                    'text' => '⬇️ To save a message, just send it to the chat bot.',
+                ]);
+            }
+        } catch (\Exception $e) {
+            $statusCode = $e->getCode();
+
+            if ($statusCode === static::INVALID_CREDENTIALS) {
+                $bot->sendMessage([
+                    'chat_id' => $this->chatId,
+                    'text' => '❗ Invalid username or password. Please log in to your Instapaper account again.',
+                ]);
+            } else {
+                ErrorLogger::sendDefaultError('auth process', $e, $this->chatId);
+            }
+
+            Database::set('auth_stage', AuthStage::AUTHORIZING_STARTED, $this->chatId);
+
+            static::rerun($this->message);
+        }
+    }
+
+    protected function getTelegraphAccountData()
+    {
+        $tgUserName = $this->getUsernameForTelegraph();
+
         $response = TelegraphAdapter::createAccount($tgUserName)->getBody();
         $data = json_decode($response, true);
 
@@ -111,5 +117,14 @@ class AuthProcessor
         }
 
         return $data['result'];
+    }
+
+    protected function getUsernameForTelegraph(): string
+    {
+        if (isset($this->message->from->username)) {
+             return $this->message->from->username;
+        }
+
+        return Database::get('username', $this->chatId);
     }
 }

@@ -12,9 +12,9 @@ use Telegram\Bot\Commands\Command;
 class LogoutCommand extends Command
 {
     protected string $name = CommandName::LOGOUT;
-    protected string $description = 'log out of your Instapaper account.';
+    protected string $description = 'log out of your Instapaper account';
 
-    public function handle()
+    public function handle(): void
     {
         $message = $this->getUpdate()->getMessage();
         $chatId = $message->getChat()->getId();
@@ -24,8 +24,10 @@ class LogoutCommand extends Command
             $this->replyWithMessage([
                 'text' => 'You have logged out of your Instapaper account.',
             ]);
+
             Database::set('auth_stage', AuthStage::AUTHORIZING_STARTED, $chatId);
-            AuthProcessor::processMessage($message);
+
+            AuthProcessor::rerun($message);
         } else {
             $this->replyWithMessage([
                 'text' => 'Before you log out of your account, you need to log in to it.',

@@ -3,27 +3,25 @@
 namespace SaveToInstapaperBot\Services;
 
 use SaveToInstapaperBot\Adapters\TelegraphAdapter;
-use SaveToInstapaperBot\Base\Bot;
-use SaveToInstapaperBot\Base\Database;
 use Candysax\TelegraphNodeConverter\HTML;
 
-class ArticlePageGenerator
+class ArticlePage
 {
     private string $topic;
     private string $text;
     private $forwardFromChat;
-    private string $chatId;
+    private string $token;
 
-    public function __construct(string $topic, string $text, $forwardFromChat, string $chatId)
+    public function __construct(string $topic, string $text, $forwardFromChat, string $token)
     {
         $this->topic = $topic;
         $this->text = $text;
         $this->forwardFromChat = $forwardFromChat;
-        $this->chatId = $chatId;
+        $this->token = $token;
     }
 
 
-    public function createArticle()
+    public function create(): ?string
     {
         $title = $this->generateArticleTitle(
             $this->forwardFromChat,
@@ -34,7 +32,7 @@ class ArticlePageGenerator
 
         $response = TelegraphAdapter::createPage(
             $title,
-            Database::get('access_token', $this->chatId),
+            $this->token,
             $content,
         )->getBody();
 
@@ -48,7 +46,7 @@ class ArticlePageGenerator
     }
 
 
-    private function generateArticleTitle($forwardFromChat, string $topic)
+    private function generateArticleTitle($forwardFromChat, string $topic): string
     {
         if ($forwardFromChat) {
             return "{$forwardFromChat['title']} | {$topic}";

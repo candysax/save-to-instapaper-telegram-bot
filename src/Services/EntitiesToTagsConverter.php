@@ -2,11 +2,9 @@
 
 namespace SaveToInstapaperBot\Services;
 
-use SaveToInstapaperBot\Helpers\Emojis;
-
 class EntitiesToTagsConverter
 {
-    public function convert($entities, string $text)
+    public function convert($entities, string $text): string
     {
         $shift = 0;
         $searchText = $text;
@@ -18,7 +16,7 @@ class EntitiesToTagsConverter
             $entityType = $entity->getType();
             $entityOffset = $entity->getOffset();
 
-            $emojis = Emojis::count($searchText, $startPosition, $entityOffset);
+            $emojis = EmojisCounter::count($searchText, $startPosition, $entityOffset);
             $totalEmojisCount += $emojis;
 
             $entityText = mb_substr($searchText, $entityOffset - $totalEmojisCount, $entity->getLength());

@@ -12,9 +12,9 @@ use Telegram\Bot\Commands\Command;
 class StartCommand extends Command
 {
     protected string $name = CommandName::START;
-    protected string $description = 'launch the bot.';
+    protected string $description = 'launch the bot';
 
-    public function handle()
+    public function handle(): void
     {
         $message = $this->getUpdate()->getMessage();
         $chatId = $message->getChat()->getId();
@@ -26,7 +26,8 @@ class StartCommand extends Command
             ]);
 
             Database::set('auth_stage', AuthStage::AUTHORIZING_STARTED, $chatId);
-            AuthProcessor::processMessage($message);
+
+            AuthProcessor::run($message);
         } else {
             $this->replyWithMessage([
                 'text' => 'You are already logged into your Instapaper account.',

@@ -3,10 +3,11 @@
 namespace SaveToInstapaperBot\Adapters;
 
 use GuzzleHttp\Client;
+use Psr\Http\Message\ResponseInterface;
 
 class InstapaperAdapter
 {
-    public static function auth(string $username, string $password)
+    public static function auth(string $username, string $password): ResponseInterface
     {
         $client = new Client();
 
@@ -19,7 +20,7 @@ class InstapaperAdapter
     }
 
 
-    public static function save(string $url, array $credentials)
+    public static function save(string $url, array $credentials): ResponseInterface
     {
         $client = new Client();
 

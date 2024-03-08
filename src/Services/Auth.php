@@ -2,6 +2,7 @@
 
 namespace SaveToInstapaperBot\Services;
 
+use Psr\Http\Message\ResponseInterface;
 use SaveToInstapaperBot\Adapters\InstapaperAdapter;
 use SaveToInstapaperBot\Base\Bot;
 use SaveToInstapaperBot\Base\Database;
@@ -11,51 +12,22 @@ use SaveToInstapaperBot\Helpers\ErrorLogger;
 
 class Auth
 {
-    public static function isLogged(string $chatId)
+    public static function isLogged(string $chatId): bool
     {
-        $db = Database::getInstance();
-
-        try {
-            $user = $db->getDoc($chatId);
-            if ($user->auth_stage !== AuthStage::AUTHORIZED) {
-                return false;
-            }
+        if (intval(Database::get('auth_stage', $chatId)) === AuthStage::AUTHORIZED) {
             return true;
-        } catch (CouchNotFoundException $e) {
-            return false;
-        } catch (\Exception $e) {
-            Bot::getInstance()->sendMessage([
-                'chat_id' => $chatId,
-                'text' => ErrorLogger::print(
-                    'auth',
-                    '❗ Sorry, something went wrong. Please try again later.',
-                    $e
-                ),
-            ]);
         }
+
+        return false;
     }
 
-    public static function login(string $username, string $password)
+    public static function login(string $username, string $password): ResponseInterface
     {
         return InstapaperAdapter::auth($username, $password);
     }
 
-    public static function logout(string $chatId)
+    public static function logout(string $chatId): bool
     {
-        $db = Database::getInstance();
-
-        try {
-            $user = $db->getDoc($chatId);
-            $db->deleteDoc($user);
-        } catch (\Exception $e) {
-            Bot::getInstance()->sendMessage([
-                'chat_id' => $chatId,
-                'text' => ErrorLogger::print(
-                    'logout',
-                    '❗ Sorry, something went wrong. Please try again later.',
-                    $e
-                ),
-            ]);
-        }
+        return Database::delete($chatId);
     }
 }

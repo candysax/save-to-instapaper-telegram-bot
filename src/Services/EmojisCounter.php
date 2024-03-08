@@ -1,12 +1,12 @@
 <?php
 
-namespace SaveToInstapaperBot\Helpers;
+namespace SaveToInstapaperBot\Services;
 
 use SteppingHat\EmojiDetector\EmojiDetector;
 
 class EmojisCounter
 {
-    public static function count($text, $startPosition, $endPosition)
+    public static function count(string $text, int $startPosition, int $endPosition): ?int
     {
         $text = mb_substr($text, $startPosition, $endPosition - $startPosition);
 
@@ -18,7 +18,9 @@ class EmojisCounter
             if ($shift > 1) {
                 $shift -= 1;
             }
+
             $sum += $shift;
+
             return $sum;
         });
     }

@@ -2,19 +2,21 @@
 
 require_once __DIR__ . '/vendor/autoload.php';
 
+use PHPOnCouch\Exceptions\CouchNotFoundException;
 use SaveToInstapaperBot\Commands\HelpCommand;
 use SaveToInstapaperBot\Commands\LogoutCommand;
 use SaveToInstapaperBot\Commands\StartCommand;
 use SaveToInstapaperBot\Handlers\CallbackHandler;
 use SaveToInstapaperBot\Handlers\MessageHandler;
-use Telegram\Bot\Api;
+use SaveToInstapaperBot\Base\Bot;
+use SaveToInstapaperBot\Helpers\ErrorLogger;
 
 if (file_exists('.env')) {
     $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);;
     $dotenv->load();
 }
 
-$bot = new Api($_ENV['BOT_TOKEN']);
+$bot = Bot::api();
 
 $bot->addCommands([
     StartCommand::class,
@@ -25,10 +27,21 @@ $bot->commandsHandler(true);
 
 $update = $bot->getWebhookUpdate();
 
-if ($update->has('message')) {
-    $message = $update->getMessage();
-    MessageHandler::handle($message, $bot);
-} elseif ($update->has('callback_query')) {
-    $callbackQuery = $update->getCallbackQuery();
-    CallbackHandler::handle($callbackQuery);
+try {
+    if ($update->has('message')) {
+        $message = $update->getMessage();
+        (MessageHandler::start())->handle($message);
+    } elseif ($update->has('callback_query')) {
+        $callbackQuery = $update->getCallbackQuery();
+        (CallbackHandler::start())->handle($callbackQuery);
+    }
+} catch (\Exception $exception) {
+    $bot->sendMessage([
+        'chat_id' => $update->has('message') ? $update->getMessage()->getChat()->getId() : $update->getCallbackQuery()->getMessage()->getChat()->getId(),
+        'text' => ErrorLogger::print(
+            'global',
+            '❗ Sorry, something went wrong. Please try again later.',
+            $exception
+        ),
+    ]);
 }

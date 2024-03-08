@@ -3,10 +3,11 @@
 namespace SaveToInstapaperBot\Adapters;
 
 use GuzzleHttp\Client;
+use Psr\Http\Message\ResponseInterface;
 
 class TelegraphAdapter
 {
-    public static function createAccount(string $tgUserName)
+    public static function createAccount(string $tgUserName): ResponseInterface
     {
         $client = new Client();
 
@@ -22,7 +23,8 @@ class TelegraphAdapter
         string $title,
         string $accessToken,
         string $content
-    ) {
+    ): ResponseInterface
+    {
         $client = new Client();
 
         return $client->request('POST', $_ENV['CREATE_PAGE_TGH_URL'], [
