@@ -2,8 +2,6 @@
 
 namespace SaveToInstapaperBot\Services;
 
-use GuzzleHttp\HandlerStack;
-use GuzzleHttp\Subscriber\Oauth\Oauth1;
 use SaveToInstapaperBot\Adapters\InstapaperAdapter;
 use SaveToInstapaperBot\Base\Database;
 use SaveToInstapaperBot\Helpers\AuthStage;

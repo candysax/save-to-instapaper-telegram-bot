@@ -4,7 +4,6 @@ namespace SaveToInstapaperBot\Adapters;
 
 use GuzzleHttp\Client;
 use Psr\Http\Message\ResponseInterface;
-use SaveToInstapaperBot\Base\Bot;
 
 class TelegraphAdapter
 {

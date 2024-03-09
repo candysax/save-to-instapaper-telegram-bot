@@ -4,7 +4,6 @@ namespace SaveToInstapaperBot\Services;
 
 use SaveToInstapaperBot\Adapters\TelegraphAdapter;
 use Candysax\TelegraphNodeConverter\HTML;
-use SaveToInstapaperBot\Base\Bot;
 
 class ArticlePage
 {
