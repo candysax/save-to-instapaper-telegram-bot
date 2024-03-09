@@ -6,7 +6,7 @@ use Telegram\Bot\Objects\Message;
 
 abstract class BaseMessageProcessor extends BaseProcessor
 {
-    protected const INVALID_CREDENTIALS = 403;
+    protected const INVALID_CREDENTIALS = 401;
 
     protected Message $message;
     protected string $chatId;

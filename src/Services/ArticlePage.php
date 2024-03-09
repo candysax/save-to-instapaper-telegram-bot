@@ -4,15 +4,15 @@ namespace SaveToInstapaperBot\Services;
 
 use SaveToInstapaperBot\Adapters\TelegraphAdapter;
 use Candysax\TelegraphNodeConverter\HTML;
+use SaveToInstapaperBot\Base\Bot;
 
 class ArticlePage
 {
-    private string $topic;
-    private string $text;
-    private $forwardFromChat;
-    private string $token;
-
-    public function __construct(string $topic, string $text, $forwardFromChat, string $token)
+    public function __construct(
+        protected string $topic,
+        protected string $text,
+        protected $forwardFromChat,
+        protected string $token)
     {
         $this->topic = $topic;
         $this->text = $text;
@@ -20,23 +20,15 @@ class ArticlePage
         $this->token = $token;
     }
 
-
     public function create(): ?string
     {
-        $title = $this->generateArticleTitle(
-            $this->forwardFromChat,
-            $this->topic
-        );
-
-        $content = HTML::convertToNode($this->text)->json();
-
         $response = TelegraphAdapter::createPage(
-            $title,
+            $this->formatArticleTitle($this->forwardFromChat, $this->topic),
             $this->token,
-            $content,
+            HTML::convertToNode($this->text)->json(),
         )->getBody();
 
-        $data = json_decode($response, true);
+        $data = json_decode($response->getContents(), true);
 
         if (!$data['ok']) {
             throw new \Exception($data['error']);
@@ -46,7 +38,7 @@ class ArticlePage
     }
 
 
-    private function generateArticleTitle($forwardFromChat, string $topic): string
+    private function formatArticleTitle($forwardFromChat, string $topic): string
     {
         if ($forwardFromChat) {
             return "{$forwardFromChat['title']} | {$topic}";

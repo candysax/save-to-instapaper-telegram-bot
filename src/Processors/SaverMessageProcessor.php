@@ -15,8 +15,6 @@ use Telegram\Bot\Keyboard\Keyboard;
 
 class SaverMessageProcessor extends BaseMessageProcessor
 {
-    protected const SUCCESSFUL = 201;
-
     public function processMessage(): void
     {
         $bot = Bot::api();

@@ -12,8 +12,6 @@ use Telegram\Bot\Actions;
 
 class AuthProcessor extends BaseMessageProcessor
 {
-    protected const SUCCESSFUL = 200;
-
     public function processMessage(): void
     {
         switch (Database::get('auth_stage', $this->chatId)) {
@@ -64,28 +62,28 @@ class AuthProcessor extends BaseMessageProcessor
                 'action' => Actions::TYPING,
             ]);
 
-            $response = Auth::login(Database::get('username', $this->chatId), $password);
+            $authData = [];
+             if (Auth::getToken(Database::get('username', $this->chatId), $password, $authData)) {
+                 Database::set('token', $authData['oauth_token'], $this->chatId);
+                 Database::set('token_secret', $authData['oauth_token_secret'], $this->chatId);
 
-            if ($response->getStatusCode() === static::SUCCESSFUL) {
-                Database::set('password', $password, $this->chatId);
+                 $accountData = $this->getTelegraphAccountData();
 
-                $accountData = $this->getTelegraphAccountData();
+                 Database::set('telegraph_access_token', $accountData['access_token'], $this->chatId);
+                 Database::set('auth_stage', AuthStage::AUTHORIZED, $this->chatId);
 
-                Database::set('access_token', $accountData['access_token'], $this->chatId);
-                Database::set('auth_stage', AuthStage::AUTHORIZED, $this->chatId);
-
-                $bot->sendMessage([
-                    'chat_id' => $this->chatId,
-                    'text' => '☑️ You have successfully logged in to your account.',
-                ]);
-                $bot->deleteMessage([
-                    'chat_id' => $this->chatId,
-                    'message_id' => $this->message->getMessageId(),
-                ]);
-                $bot->sendMessage([
-                    'chat_id' => $this->chatId,
-                    'text' => '⬇️ To save a message, just send it to the chat bot.',
-                ]);
+                 $bot->sendMessage([
+                     'chat_id' => $this->chatId,
+                     'text' => '☑️ You have successfully logged in to your account.',
+                 ]);
+                 $bot->deleteMessage([
+                     'chat_id' => $this->chatId,
+                     'message_id' => $this->message->getMessageId(),
+                 ]);
+                 $bot->sendMessage([
+                     'chat_id' => $this->chatId,
+                     'text' => '⬇️ To save a message, just send it to the chat bot.',
+                 ]);
             }
         } catch (\Exception $e) {
             $statusCode = $e->getCode();

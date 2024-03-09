@@ -7,8 +7,6 @@ use SaveToInstapaperBot\Base\Database;
 
 class SaverCallbackQueryProcessor extends BaseCallbackQueryProcessor
 {
-    protected const SUCCESSFUL = 201;
-
     public function processCallbackQuery(): void
     {
         $data = explode(' ', $this->callbackQuery->getData());

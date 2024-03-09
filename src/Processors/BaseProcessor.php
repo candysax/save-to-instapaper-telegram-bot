@@ -2,7 +2,6 @@
 
 namespace SaveToInstapaperBot\Processors;
 
-use Psr\Http\Message\ResponseInterface;
 use SaveToInstapaperBot\Adapters\InstapaperAdapter;
 use SaveToInstapaperBot\Base\Bot;
 use SaveToInstapaperBot\Base\Database;
@@ -11,6 +10,8 @@ use Telegram\Bot\Actions;
 
 abstract class BaseProcessor
 {
+    protected const SUCCESSFUL = 200;
+
     protected function processLink(string $url): void
     {
         Bot::api()->sendChatAction([
@@ -18,9 +19,7 @@ abstract class BaseProcessor
             'action' => Actions::TYPING,
         ]);
 
-        $response = $this->saveLink($url);
-
-        if ($response->getStatusCode() === static::SUCCESSFUL) {
+        if ($this->saveLink($url)) {
             Bot::api()->sendMessage([
                 'chat_id' => $this->chatId,
                 'text' => '✅ Link has been added to your Instapaper.',
@@ -40,12 +39,10 @@ abstract class BaseProcessor
             $topic,
             $text,
             $forwardFromChat,
-            Database::get('access_token', $this->chatId))
+            Database::get('telegraph_access_token', $this->chatId))
         )->create();
 
-        $response = $this->saveLink($url);
-
-        if ($response->getStatusCode() === static::SUCCESSFUL) {
+        if ($this->saveLink($url)) {
             Bot::api()->sendMessage([
                 'chat_id' => $this->chatId,
                 'text' => '✅ Message has been added to your Instapaper.',
@@ -54,11 +51,13 @@ abstract class BaseProcessor
     }
 
 
-    protected function saveLink(string $url): ResponseInterface
+    protected function saveLink(string $url): bool
     {
-        return InstapaperAdapter::save($url, [
-            'username' => Database::get('username', $this->chatId),
-            'password' => Database::get('password', $this->chatId),
+        $response = InstapaperAdapter::save($url, [
+            'token' => Database::get('token', $this->chatId),
+            'token_secret' => Database::get('token_secret', $this->chatId),
         ]);
+
+        return $response->getStatusCode() == static::SUCCESSFUL;
     }
 }

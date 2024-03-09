@@ -20,6 +20,12 @@
         "php-on-couch/php-on-couch": "^4.0",
         "imangazaliev/didom": "^2.0",
         "steppinghat/emoji-detector": "^1.4",
-        "candysax/telegraph-node-converter": "^1.0"
+        "candysax/telegraph-node-converter": "^1.0",
+        "guzzlehttp/oauth-subscriber": "^0.6.0"
+    },
+    "config": {
+        "allow-plugins": {
+            "php-http/discovery": true
+        }
     }
 }
