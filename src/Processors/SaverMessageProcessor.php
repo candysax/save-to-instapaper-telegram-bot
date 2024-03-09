@@ -88,7 +88,7 @@ class SaverMessageProcessor extends BaseMessageProcessor
 
                 AuthProcessor::run($this->message);
             } else {
-                ErrorLogger::sendDefaultError('save process', $e, $this->chatId);
+                ErrorLogger::sendDefaultError('save process', $this->chatId, $e);
             }
         }
     }

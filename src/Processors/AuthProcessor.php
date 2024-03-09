@@ -96,7 +96,7 @@ class AuthProcessor extends BaseMessageProcessor
                     'text' => '❗ Invalid username or password. Please log in to your Instapaper account again.',
                 ]);
             } else {
-                ErrorLogger::sendDefaultError('auth process', $e, $this->chatId);
+                ErrorLogger::sendDefaultError('auth process', $this->chatId, $e);
             }
 
             Database::set('auth_stage', AuthStage::AUTHORIZING_STARTED, $this->chatId);

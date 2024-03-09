@@ -36,12 +36,9 @@ try {
         (CallbackHandler::start())->handle($callbackQuery);
     }
 } catch (\Exception $exception) {
-    $bot->sendMessage([
-        'chat_id' => $update->has('message') ? $update->getMessage()->getChat()->getId() : $update->getCallbackQuery()->getMessage()->getChat()->getId(),
-        'text' => ErrorLogger::print(
-            'global',
-            '❗ Sorry, something went wrong. Please try again later.',
-            $exception
-        ),
-    ]);
+    ErrorLogger::sendDefaultError(
+        'global',
+        $update->has('message') ? $update->getMessage()->getChat()->getId() : $update->getCallbackQuery()->getMessage()->getChat()->getId(),
+        $exception
+    );
 }

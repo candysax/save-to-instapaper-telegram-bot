@@ -53,7 +53,7 @@ class Database
             $db->storeDoc($user);
         }
         catch (\Exception $e) {
-            ErrorLogger::sendDefaultError('set', $e, $chatId);
+            ErrorLogger::sendDefaultError('set', $chatId, $e);
         }
     }
 
@@ -66,7 +66,7 @@ class Database
 
             return $user->{$key};
         } catch (\Exception $e) {
-            ErrorLogger::sendDefaultError('get', $e, $chatId);
+            ErrorLogger::sendDefaultError('get', $chatId, $e);
 
             return '';
         }
@@ -82,7 +82,7 @@ class Database
 
             return true;
         } catch (\Exception $e) {
-            ErrorLogger::sendDefaultError('delete', $e, $chatId);
+            ErrorLogger::sendDefaultError('delete', $chatId, $e);
 
             return false;
         }
