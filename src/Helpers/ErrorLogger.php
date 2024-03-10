@@ -6,9 +6,9 @@ use SaveToInstapaperBot\Base\Bot;
 
 class ErrorLogger
 {
-    public static function print(string $alias, string $prodMessage, $e): string
+    public static function print(string $alias, string $prodMessage, $exception): string
     {
-        return $_ENV['MODE'] == 'production' ? $prodMessage : $alias . ' ' . $e->getMessage();
+        return $_ENV['MODE'] == 'production' ? $prodMessage : $alias . ' ' . $exception->getMessage();
     }
 
     public static function sendDefaultError(string $alias, string $chatId, $exception): void

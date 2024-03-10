@@ -12,7 +12,7 @@ use Telegram\Bot\Commands\Command;
 class StartCommand extends Command
 {
     protected string $name = CommandName::START;
-    protected string $description = 'launch the bot';
+    protected string $description = 'launch the bot.';
 
     public function handle(): void
     {

@@ -2,7 +2,6 @@
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-use SaveToInstapaperBot\Adapters\InstapaperAdapter;
 use SaveToInstapaperBot\Commands\HelpCommand;
 use SaveToInstapaperBot\Commands\LogoutCommand;
 use SaveToInstapaperBot\Commands\StartCommand;

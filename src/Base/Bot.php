@@ -6,11 +6,11 @@ use Telegram\Bot\Api;
 
 class Bot
 {
-    private static $bot;
+    protected static Api $bot;
 
     public static function api()
     {
-        if (static::$bot) {
+        if (!empty(static::$bot)) {
             return static::$bot;
         }
 
