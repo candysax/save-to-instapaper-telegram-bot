@@ -3,7 +3,7 @@ services:
     build: ./
     restart: always
     volumes:
-      - papergram:/var/www/
+      - ./:/var/www/
     depends_on:
       - couchdb
 
@@ -13,7 +13,7 @@ services:
     ports:
       - 8080:80
     volumes:
-      - papergram:/var/www/
+      - ./:/var/www/
       - ./nginx:/etc/nginx/conf.d
     depends_on:
       - couchdb
@@ -33,5 +33,4 @@ services:
       - COUCHDB_PASSWORD=${DB_PASSWORD}
 
 volumes:
-  papergram:
   couchdb_data:

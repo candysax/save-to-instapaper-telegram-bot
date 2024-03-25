@@ -42,7 +42,7 @@ class AuthProcessor extends BaseMessageProcessor
 
     protected function processUsername(string $username): void
     {
-        Database::set('username', $username, $this->chatId);
+        Database::set('username', mb_strtolower($username), $this->chatId);
 
         Bot::api()->sendMessage([
             'chat_id' => $this->chatId,

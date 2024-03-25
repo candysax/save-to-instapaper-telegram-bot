@@ -5,3 +5,4 @@ temp/
 display.log
 .env.dev
 .env.prod
+.env
