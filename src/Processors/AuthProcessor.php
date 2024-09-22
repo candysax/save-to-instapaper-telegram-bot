@@ -5,7 +5,7 @@ namespace SaveToInstapaperBot\Processors;
 use SaveToInstapaperBot\Adapters\TelegraphAdapter;
 use SaveToInstapaperBot\Base\Bot;
 use SaveToInstapaperBot\Base\Database;
-use SaveToInstapaperBot\Helpers\AuthStage;
+use SaveToInstapaperBot\Enums\AuthStage;
 use SaveToInstapaperBot\Helpers\ErrorLogger;
 use SaveToInstapaperBot\Services\Auth;
 use Telegram\Bot\Actions;
@@ -15,15 +15,15 @@ class AuthProcessor extends BaseMessageProcessor
     public function processMessage(): void
     {
         switch (Database::get('auth_stage', $this->chatId)) {
-            case AuthStage::AUTHORIZING_STARTED:
+            case AuthStage::AUTHORIZING_STARTED->value:
                 $this->startAuthorization();
                 break;
 
-            case AuthStage::USERNAME_ENTERED:
+            case AuthStage::USERNAME_ENTERED->value:
                 $this->processUsername($this->message->getText());
                 break;
 
-            case AuthStage::PASSWORD_ENTERED:
+            case AuthStage::PASSWORD_ENTERED->value:
                 $this->processPassword($this->message->getText());
                 break;
         }
@@ -37,7 +37,7 @@ class AuthProcessor extends BaseMessageProcessor
             'text' => 'Enter your email:',
         ]);
 
-        Database::set('auth_stage', AuthStage::USERNAME_ENTERED, $this->chatId);
+        Database::set('auth_stage', AuthStage::USERNAME_ENTERED->value, $this->chatId);
     }
 
     protected function processUsername(string $username): void
@@ -49,7 +49,7 @@ class AuthProcessor extends BaseMessageProcessor
             'text' => 'Enter your password:',
         ]);
 
-        Database::set('auth_stage', AuthStage::PASSWORD_ENTERED, $this->chatId);
+        Database::set('auth_stage', AuthStage::PASSWORD_ENTERED->value, $this->chatId);
     }
 
     protected function processPassword(string $password): void
@@ -70,7 +70,7 @@ class AuthProcessor extends BaseMessageProcessor
                  $accountData = $this->getTelegraphAccountData();
 
                  Database::set('telegraph_access_token', $accountData['access_token'], $this->chatId);
-                 Database::set('auth_stage', AuthStage::AUTHORIZED, $this->chatId);
+                 Database::set('auth_stage', AuthStage::AUTHORIZED->value, $this->chatId);
 
                  $bot->sendMessage([
                      'chat_id' => $this->chatId,
@@ -97,7 +97,7 @@ class AuthProcessor extends BaseMessageProcessor
                 ErrorLogger::sendDefaultError('auth process', $this->chatId, $e);
             }
 
-            Database::set('auth_stage', AuthStage::AUTHORIZING_STARTED, $this->chatId);
+            Database::set('auth_stage', AuthStage::AUTHORIZING_STARTED->value, $this->chatId);
 
             static::rerun($this->message);
         }

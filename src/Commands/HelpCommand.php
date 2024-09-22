@@ -2,12 +2,12 @@
 
 namespace SaveToInstapaperBot\Commands;
 
-use SaveToInstapaperBot\Helpers\CommandName;
+use SaveToInstapaperBot\Enums\CommandName;
 use Telegram\Bot\Commands\Command;
 
 class HelpCommand extends Command
 {
-    protected string $name = CommandName::HELP;
+    protected string $name = CommandName::HELP->value;
     protected string $description = 'show a list of available commands.';
 
     public function handle(): void

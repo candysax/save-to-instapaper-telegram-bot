@@ -3,15 +3,15 @@
 namespace SaveToInstapaperBot\Commands;
 
 use SaveToInstapaperBot\Base\Database;
-use SaveToInstapaperBot\Helpers\CommandName;
-use SaveToInstapaperBot\Helpers\AuthStage;
+use SaveToInstapaperBot\Enums\CommandName;
+use SaveToInstapaperBot\Enums\AuthStage;
 use SaveToInstapaperBot\Processors\AuthProcessor;
 use SaveToInstapaperBot\Services\Auth;
 use Telegram\Bot\Commands\Command;
 
 class StartCommand extends Command
 {
-    protected string $name = CommandName::START;
+    protected string $name = CommandName::START->value;
     protected string $description = 'launch the bot.';
 
     public function handle(): void
@@ -25,7 +25,7 @@ class StartCommand extends Command
                 "Please, log in to your Instapaper account.",
             ]);
 
-            Database::set('auth_stage', AuthStage::AUTHORIZING_STARTED, $chatId);
+            Database::set('auth_stage', AuthStage::AUTHORIZING_STARTED->value, $chatId);
 
             AuthProcessor::run($message);
         } else {

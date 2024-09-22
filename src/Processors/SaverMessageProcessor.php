@@ -4,7 +4,7 @@ namespace SaveToInstapaperBot\Processors;
 
 use SaveToInstapaperBot\Base\Bot;
 use SaveToInstapaperBot\Base\Database;
-use SaveToInstapaperBot\Helpers\AuthStage;
+use SaveToInstapaperBot\Enums\AuthStage;
 use SaveToInstapaperBot\Helpers\ErrorLogger;
 use SaveToInstapaperBot\Services\ArticleTopic;
 use SaveToInstapaperBot\Services\Auth;
@@ -82,7 +82,7 @@ class SaverMessageProcessor extends BaseMessageProcessor
                 ]);
 
                 Auth::logout($this->chatId);
-                Database::set('auth_stage', AuthStage::AUTHORIZING_STARTED, $this->chatId);
+                Database::set('auth_stage', AuthStage::AUTHORIZING_STARTED->value, $this->chatId);
 
                 AuthProcessor::run($this->message);
             } else {

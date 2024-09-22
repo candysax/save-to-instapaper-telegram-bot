@@ -4,7 +4,7 @@ namespace SaveToInstapaperBot\Services;
 
 use SaveToInstapaperBot\Adapters\InstapaperAdapter;
 use SaveToInstapaperBot\Base\Database;
-use SaveToInstapaperBot\Helpers\AuthStage;
+use SaveToInstapaperBot\Enums\AuthStage;
 
 class Auth
 {
@@ -12,7 +12,7 @@ class Auth
 
     public static function isLogged(string $chatId): bool
     {
-        if (intval(Database::get('auth_stage', $chatId)) === AuthStage::AUTHORIZED) {
+        if (intval(Database::get('auth_stage', $chatId)) === AuthStage::AUTHORIZED->value) {
             return true;
         }
 
